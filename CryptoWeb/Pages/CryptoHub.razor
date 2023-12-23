@@ -76,7 +76,7 @@ Welcome to your new app.
     protected override async Task OnInitializedAsync()
     {
         var hubConnection = new HubConnectionBuilder()
-        .WithUrl("http://cryptoapi:60029/cryptohub", conf =>
+        .WithUrl("https://cryptoapi:60028/cryptohub", conf =>
         {
             conf.HttpMessageHandlerFactory = (x) => new HttpClientHandler
                 {
