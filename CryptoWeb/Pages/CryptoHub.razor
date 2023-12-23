@@ -1,0 +1,120 @@
+﻿@page "/CryptoHub"
+
+@using CryptoWeb.Models
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Globalization
+
+
+<PageTitle>Chat</PageTitle>
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<div>
+    SignalR Status : @isConnected
+    Status Updated On : @updateOn
+</div>
+
+<h3>
+    Incoming Order Book
+</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tipo Moeda </th>
+            <th>Maior Preço </th>
+            <th>Menor Preço </th>
+            <th>Media Preco </th>
+            <th>Media Preco Acumulado </th>
+            <th>Media Crypto Acumulada </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in listOrderBook)
+        {
+            string tipoMoeda = "";
+
+            if (item.channel == LiveOrderBook.Enums.channeleth)
+                tipoMoeda = "ETH";
+            else if (item.channel == LiveOrderBook.Enums.channelbtc)
+                tipoMoeda = "BTC";
+
+
+            List<decimal[]> precosusdcrypto = ConverterListaArrayStringParaListaDecimal(item.data.Bids);
+            ItemTabelaCryptoHub itemTabela = new ItemTabelaCryptoHub(precosusdcrypto, tipoMoeda == "BTC" ? lastPrecosUsdBtc : lastPrecosUsdEth);
+            <tr>
+                <td>@tipoMoeda</td>
+                <td>@itemTabela.MaiorPreco[0] USD - @itemTabela.MaiorPreco[1] @tipoMoeda</td>
+                <td>@itemTabela.MenorPreco[0] USD - @itemTabela.MenorPreco[1] @tipoMoeda</td>
+                <td>@itemTabela.Media[0] USD - @itemTabela.Media[1] @tipoMoeda</td>
+                <td>@itemTabela.MediaPrecoAcumulada[0] USD - @itemTabela.MediaPrecoAcumulada[1] @tipoMoeda</td>
+                <td>@itemTabela.MediaAcumulada @tipoMoeda</td>
+            </tr>
+            if (tipoMoeda == "BTC")
+                lastPrecosUsdBtc = precosusdcrypto;
+            else if (tipoMoeda == "ETH")
+                lastPrecosUsdEth = precosusdcrypto;
+        }
+    </tbody>
+</table>
+
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+
+@code {
+    public bool isConnected = false;
+    private HubConnection? hubConnection;
+    public string updateOn = "";
+
+    public List<LiveOrderBook> listOrderBook = new List<LiveOrderBook>();
+    public List<decimal[]> lastPrecosUsdBtc;
+    public List<decimal[]> lastPrecosUsdEth;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var hubConnection = new HubConnectionBuilder()
+        .WithUrl("https://172.26.0.3:60028/cryptohub")
+        .Build();
+        //.withurl(urlblazorazure)
+
+
+        hubConnection.On<LiveOrderBook>
+        ("ReceiveOrderBook", (incomingOrderBook) =>
+        {
+            listOrderBook.Add(incomingOrderBook);
+            updateOn = DateTime.Now.ToLongTimeString();
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
+        isConnected = hubConnection?.State == HubConnectionState.Connected;
+    }
+
+
+
+    public static List<decimal[]> ConverterListaArrayStringParaListaDecimal(List<string[]> listaArraysStrings)
+    {
+        var listaValores = new List<decimal[]>();
+
+        foreach (var arrayStrings in listaArraysStrings)
+        {
+            decimal valorUSD = 0;
+            decimal valorBTC = 0;
+
+            bool parsedUSD = arrayStrings.Length > 0 && decimal.TryParse(arrayStrings[0], NumberStyles.Number, CultureInfo.InvariantCulture, out valorUSD);
+            bool parsedBTC = arrayStrings.Length > 1 && decimal.TryParse(arrayStrings[1], NumberStyles.Number, CultureInfo.InvariantCulture, out valorBTC);
+
+            if (parsedUSD && parsedBTC)
+            {
+                listaValores.Add(new[] { valorUSD, valorBTC });
+            }
+        }
+        return listaValores;
+    }
+
+
+}

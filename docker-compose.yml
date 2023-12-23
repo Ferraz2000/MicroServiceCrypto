@@ -1,0 +1,17 @@
+version: '3.4'
+
+services:
+  cryptoweb:
+    container_name: 'cryptoweb'
+    image: ${DOCKER_REGISTRY-}cryptoweb
+    build:
+      context: .
+      dockerfile: CryptoWeb/Dockerfile
+
+  cryptoapi:
+    container_name: 'cryptoapi'
+    image: ${DOCKER_REGISTRY-}cryptoapi
+    build:
+      context: .
+      dockerfile: CryptoAPI/Dockerfile
+
