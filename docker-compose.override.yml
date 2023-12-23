@@ -5,6 +5,10 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80;http://+:60027;https://+:60030;https://+:60028;http://+:60029;
+      - ASPNETCORE_HTTP_PORTS=60027
+      - ASPNETCORE_HTTPS_PORTS=60030 
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=mypass123
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=https/aspnetapp.pfx
     ports:
       - "60027:80"
       - "60030:443"
@@ -15,6 +19,10 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80;http://+:60027;https://+:60030;https://+:60028;http://+:60029;
+      - ASPNETCORE_HTTP_PORTS=60029
+      - ASPNETCORE_HTTPS_PORTS=60028 
+
+
     ports:
       - "60029:80"
       - "60028:443"

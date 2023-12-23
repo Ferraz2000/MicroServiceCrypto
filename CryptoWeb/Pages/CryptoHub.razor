@@ -76,9 +76,19 @@ Welcome to your new app.
     protected override async Task OnInitializedAsync()
     {
         var hubConnection = new HubConnectionBuilder()
-        .WithUrl("http://cryptoapi:60029/cryptohub")
+        .WithUrl("http://cryptoapi:60029/cryptohub", conf =>
+        {
+            conf.HttpMessageHandlerFactory = (x) => new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                };
+        })
         .Build();
         //.withurl(urlblazorazure)
+
+
+
+
         hubConnection.On<LiveOrderBook>
         ("ReceiveOrderBook", (incomingOrderBook) =>
         {
