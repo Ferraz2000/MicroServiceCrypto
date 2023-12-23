@@ -4,17 +4,17 @@ services:
   cryptoweb:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_URLS=https://+:443;http://+:80;http://+:60027;https://+:60030;https://+:60028;http://+:60029;
     ports:
       - "60027:80"
-      - "60026:443"
+      - "60030:443"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
   cryptoapi:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_URLS=https://+:443;http://+:80;http://+:60027;https://+:60030;https://+:60028;http://+:60029;
     ports:
       - "60029:80"
       - "60028:443"

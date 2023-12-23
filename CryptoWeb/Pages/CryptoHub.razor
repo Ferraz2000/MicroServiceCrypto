@@ -68,7 +68,6 @@ Welcome to your new app.
     public bool isConnected = false;
     private HubConnection? hubConnection;
     public string updateOn = "";
-
     public List<LiveOrderBook> listOrderBook = new List<LiveOrderBook>();
     public List<decimal[]> lastPrecosUsdBtc;
     public List<decimal[]> lastPrecosUsdEth;
@@ -77,11 +76,9 @@ Welcome to your new app.
     protected override async Task OnInitializedAsync()
     {
         var hubConnection = new HubConnectionBuilder()
-        .WithUrl("https://172.26.0.3:60028/cryptohub")
+        .WithUrl("http://cryptoapi:60029/cryptohub")
         .Build();
         //.withurl(urlblazorazure)
-
-
         hubConnection.On<LiveOrderBook>
         ("ReceiveOrderBook", (incomingOrderBook) =>
         {
@@ -89,7 +86,6 @@ Welcome to your new app.
             updateOn = DateTime.Now.ToLongTimeString();
             InvokeAsync(StateHasChanged);
         });
-
         await hubConnection.StartAsync();
         isConnected = hubConnection?.State == HubConnectionState.Connected;
     }
@@ -104,7 +100,6 @@ Welcome to your new app.
         {
             decimal valorUSD = 0;
             decimal valorBTC = 0;
-
             bool parsedUSD = arrayStrings.Length > 0 && decimal.TryParse(arrayStrings[0], NumberStyles.Number, CultureInfo.InvariantCulture, out valorUSD);
             bool parsedBTC = arrayStrings.Length > 1 && decimal.TryParse(arrayStrings[1], NumberStyles.Number, CultureInfo.InvariantCulture, out valorBTC);
 
@@ -115,6 +110,4 @@ Welcome to your new app.
         }
         return listaValores;
     }
-
-
 }
