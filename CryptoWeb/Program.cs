@@ -1,4 +1,3 @@
-using CryptoWeb.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -10,7 +9,6 @@ builder.Services.AddServerSideBlazor().AddHubOptions(o =>
 {
     o.MaximumReceiveMessageSize = 10240000;
 });
-builder.Services.AddSingleton<WeatherForecastService>();
 
 
 var app = builder.Build();
