@@ -86,11 +86,8 @@ Welcome to your new app.
         .Build();
         //.withurl(urlblazorazure)
 
-
-
-
         hubConnection.On<LiveOrderBook>
-        ("ReceiveOrderBook", (incomingOrderBook) =>
+        ("BroadcastCrypto", (incomingOrderBook) =>
         {
             listOrderBook.Add(incomingOrderBook);
             updateOn = DateTime.Now.ToLongTimeString();

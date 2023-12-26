@@ -2,15 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 namespace CryptoAPI.BackgroundServices.HubSignalR
 {
-    public class CryptoHub : Hub
+    public class CryptoHub : Hub<ICryptoHub>
     {
-        public void BroadcastCrypto(LiveOrderBookDto orderbook)
-        {
-            Clients.All.SendAsync("ReceiveOrderBook", orderbook);
-        }
-        public void BroadcastMessage(string message)
-        {
-            Clients.All.SendAsync("ReceiveMessage", message);
-        }
     }
 }

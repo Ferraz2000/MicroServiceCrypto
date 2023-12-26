@@ -13,8 +13,9 @@ public class BackgroundCryptoService : BackgroundService
     readonly ILogger<BackgroundCryptoService> _logger;
     private readonly ICryptoRepository _cryptoRepository;
     private readonly IMapper _mapper;
-    private readonly IHubContext<CryptoHub> _hubContext;
-    public BackgroundCryptoService(IHubContext<CryptoHub> hubContext, IMapper mapper, ICryptoRepository cryptoRepository, ILogger<BackgroundCryptoService> logger)
+    private readonly IHubContext<CryptoHub, ICryptoHub> _hubContext;
+    private const string urlBitStamp = "wss://ws.bitstamp.net";
+    public BackgroundCryptoService(IHubContext<CryptoHub, ICryptoHub> hubContext, IMapper mapper, ICryptoRepository cryptoRepository, ILogger<BackgroundCryptoService> logger)
     {
         _logger = logger;
         _cryptoRepository = cryptoRepository;
@@ -24,7 +25,7 @@ public class BackgroundCryptoService : BackgroundService
     protected async override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("CryptoService Started");
-        var uri = new Uri($"wss://ws.bitstamp.net");
+        var uri = new Uri($"{urlBitStamp}");
         using var clientWebSocket = new ClientWebSocket();
 
         try
@@ -59,15 +60,15 @@ public class BackgroundCryptoService : BackgroundService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: {ex.Message}");
+            _logger.LogInformation($"Error: {ex.Message}");
         }
     }
 
-    private void CreateOrderBookAndSendToClients(LiveOrderBook orderBook)
+    private async void CreateOrderBookAndSendToClients(LiveOrderBook orderBook)
     {
         var orderBookDto = _mapper.Map<LiveOrderBookDto>(orderBook);
         _cryptoRepository.Create(orderBookDto);
-        _hubContext.Clients.All.SendAsync("ReceiveOrderBook", orderBookDto);
+        await _hubContext.Clients.All.BroadcastCrypto(orderBookDto);
     }
 
     private async Task Subscribe(ClientWebSocket clientWebSocket, CancellationToken stoppingToken)
