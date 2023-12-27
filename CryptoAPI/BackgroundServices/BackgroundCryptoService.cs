@@ -2,89 +2,90 @@
 using CryptoAPI.BackgroundServices.HubSignalR;
 using CryptoAPI.Data.Repositories;
 using CryptoAPI.Models.BitStamp;
-using CryptoAPI.Models.Dto;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using System.Net.WebSockets;
 using System.Text;
 
-public class BackgroundCryptoService : BackgroundService
+namespace CryptoAPI.BackgroundServices
 {
-    readonly ILogger<BackgroundCryptoService> _logger;
-    private readonly ICryptoRepository _cryptoRepository;
-    private readonly IMapper _mapper;
-    private readonly IHubContext<CryptoHub, ICryptoHub> _hubContext;
-    private const string urlBitStamp = "wss://ws.bitstamp.net";
-    public BackgroundCryptoService(IHubContext<CryptoHub, ICryptoHub> hubContext, IMapper mapper, ICryptoRepository cryptoRepository, ILogger<BackgroundCryptoService> logger)
+    public class BackgroundCryptoService : BackgroundService
     {
-        _logger = logger;
-        _cryptoRepository = cryptoRepository;
-        _mapper = mapper;
-        _hubContext = hubContext;
-    }
-    protected async override Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        _logger.LogInformation("CryptoService Started");
-        var uri = new Uri($"{urlBitStamp}");
-        using var clientWebSocket = new ClientWebSocket();
-
-        try
+        readonly ILogger<BackgroundCryptoService> _logger;
+        private readonly ICryptoRepository _cryptoRepository;
+        private readonly IMapper _mapper;
+        private readonly IHubContext<CryptoHub, ICryptoHub> _hubContext;
+        private readonly string urlBitStamp;
+        public BackgroundCryptoService(IConfiguration configuration, IHubContext<CryptoHub, ICryptoHub> hubContext, IMapper mapper, ICryptoRepository cryptoRepository, ILogger<BackgroundCryptoService> logger)
         {
-            await clientWebSocket.ConnectAsync(uri, stoppingToken);
-            if (clientWebSocket.State == WebSocketState.Open)
-            {
-                await Subscribe(clientWebSocket, stoppingToken);
-                var receiveBuffer = new ArraySegment<byte>(new byte[8192]);
-                WebSocketReceiveResult result;
-                do
-                {
-                    result = await clientWebSocket.ReceiveAsync(receiveBuffer, stoppingToken);
+            _logger = logger;
+            _cryptoRepository = cryptoRepository;
+            _mapper = mapper;
+            _hubContext = hubContext;
+            urlBitStamp = configuration["urlbitstamp"];
+        }
+        protected async override Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            _logger.LogInformation("CryptoService Started");
+            var uri = new Uri($"{urlBitStamp}");
+            using var clientWebSocket = new ClientWebSocket();
 
-                    if (result.MessageType == WebSocketMessageType.Text)
+            try
+            {
+                await clientWebSocket.ConnectAsync(uri, stoppingToken);
+                if (clientWebSocket.State == WebSocketState.Open)
+                {
+                    await Subscribe(clientWebSocket, stoppingToken);
+                    var receiveBuffer = new ArraySegment<byte>(new byte[8192]);
+                    WebSocketReceiveResult result;
+                    do
                     {
-                        var message = Encoding.UTF8.GetString(receiveBuffer.Array, 0, result.Count);
-                        LiveOrderBook orderBook = JsonConvert.DeserializeObject<LiveOrderBook>(message);
-                        if (orderBook != null && orderBook._event == LiveOrderBook.Enums.eventSubscribeSuccess)
+                        result = await clientWebSocket.ReceiveAsync(receiveBuffer, stoppingToken);
+
+                        if (result.MessageType == WebSocketMessageType.Text)
                         {
-                            _logger.LogInformation("Received subscription response.");
-                        }
-                        else if (orderBook != null)
-                        {
-                            CreateOrderBookAndSendToClients(orderBook);
-                            await Task.Delay(5000, stoppingToken);
+                            var message = Encoding.UTF8.GetString(receiveBuffer.Array, 0, result.Count);
+                            CryptoAPI.Models.BitStamp.LiveOrderBook orderBook = JsonConvert.DeserializeObject<CryptoAPI.Models.BitStamp.LiveOrderBook>(message);
+                            if (orderBook != null && orderBook._event == CryptoAPI.Models.BitStamp.LiveOrderBook.Enums.eventSubscribeSuccess)
+                            {
+                                _logger.LogInformation("Received subscription response.");
+                            }
+                            else if (orderBook != null)
+                            {
+                                await CreateOrderBookAndSendToClients(orderBook);
+                                await Task.Delay(5000, stoppingToken);
+                            }
                         }
                     }
+                    while (!stoppingToken.IsCancellationRequested);
                 }
-                while (!stoppingToken.IsCancellationRequested);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation($"Error: {ex.Message}");
             }
         }
-        catch (Exception ex)
+
+        private async Task CreateOrderBookAndSendToClients(CryptoAPI.Models.BitStamp.LiveOrderBook orderBook)
         {
-            _logger.LogInformation($"Error: {ex.Message}");
+            var orderBookdb = _mapper.Map<CryptoAPI.Models.Mongo.LiveOrderBookDB>(orderBook);
+            _cryptoRepository.Create(orderBookdb);
+            await _hubContext.Clients.All.BroadcastCrypto(orderBookdb);
         }
-    }
 
-    private async void CreateOrderBookAndSendToClients(LiveOrderBook orderBook)
-    {
-        var orderBookDto = _mapper.Map<LiveOrderBookDto>(orderBook);
-        _cryptoRepository.Create(orderBookDto);
-        await _hubContext.Clients.All.BroadcastCrypto(orderBookDto);
-    }
-
-    private async Task Subscribe(ClientWebSocket clientWebSocket, CancellationToken stoppingToken)
-    {
-        List<string> pairs = new List<string> { LiveOrderBook.Enums.pairbtc, LiveOrderBook.Enums.paireth };
-
-        foreach (var pair in pairs)
+        private async Task Subscribe(ClientWebSocket clientWebSocket, CancellationToken stoppingToken)
         {
-            LiveOrderBook subscribeRequest = new LiveOrderBook();
-            subscribeRequest._event = LiveOrderBook.Enums.eventSubscribe;
-            subscribeRequest.data.channel = $"order_book_{pair}";
-            var serializedRequest = JsonConvert.SerializeObject(subscribeRequest);
-            var subscribeBuffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(serializedRequest));
-            await clientWebSocket.SendAsync(subscribeBuffer, WebSocketMessageType.Text, true, stoppingToken);
+            List<string> pairs = new List<string> { CryptoAPI.Models.BitStamp.LiveOrderBook.Enums.pairbtc, CryptoAPI.Models.BitStamp.LiveOrderBook.Enums.paireth };
+
+            foreach (var pair in pairs)
+            {
+                CryptoAPI.Models.BitStamp.LiveOrderBook subscribeRequest = new CryptoAPI.Models.BitStamp.LiveOrderBook();
+                subscribeRequest._event = CryptoAPI.Models.BitStamp.LiveOrderBook.Enums.eventSubscribe;
+                subscribeRequest.data.channel = $"order_book_{pair}";
+                var serializedRequest = JsonConvert.SerializeObject(subscribeRequest);
+                var subscribeBuffer = new ArraySegment<byte>(Encoding.UTF8.GetBytes(serializedRequest));
+                await clientWebSocket.SendAsync(subscribeBuffer, WebSocketMessageType.Text, true, stoppingToken);
+            }
         }
     }
 }
-
-

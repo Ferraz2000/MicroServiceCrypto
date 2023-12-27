@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson;
 
-namespace CryptoAPI.Models
+namespace CryptoAPI.Models.Dto
 {
     public class MelhorPrecoResponse
     {
@@ -8,14 +8,14 @@ namespace CryptoAPI.Models
         {
 
         }
-        public MelhorPrecoResponse(Cotacao cotacao,string moeda)
+        public MelhorPrecoResponse(Cotacao cotacao, string moeda)
         {
-            this.ResultadoCalculo = cotacao.ResultadoCalculado;
-            this.QuantidadeSolicitada = cotacao.QuantidadeSolicitada;
-            this.IdCotacao = ObjectId.GenerateNewId();
-            this.TipoOperacao = cotacao.TipoOperacao;
-            this.ColecaoUtilizada = cotacao.ColecaoUtilizada;
-            this.Moeda = moeda;
+            ResultadoCalculo = cotacao.ResultadoCalculado;
+            QuantidadeSolicitada = cotacao.QuantidadeSolicitada;
+            IdCotacao = ObjectId.GenerateNewId();
+            TipoOperacao = cotacao.TipoOperacao;
+            ColecaoUtilizada = cotacao.ColecaoUtilizada;
+            Moeda = moeda;
         }
         public ObjectId IdCotacao { get; set; }
         public List<decimal[]> ColecaoUtilizada { get; set; }

@@ -1,11 +1,11 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace CryptoAPI.Models.Dto
+namespace CryptoAPI.Models.Mongo
 {
-    public class MelhorPrecoResponseDTO
+    public class MelhorPrecoResponseDB
     {
-        [BsonId, BsonElement("_id"),BsonRepresentation(BsonType.ObjectId)]
+        [BsonId, BsonElement("_id"), BsonRepresentation(BsonType.ObjectId)]
         public string IdCotacao { get; set; }
 
         [BsonElement("colecaoUtilizada")]

@@ -1,5 +1,4 @@
-﻿
-using CryptoAPI.Models.Dto;
+﻿using CryptoAPI.Models.Mongo;
 using System.Globalization;
 
 namespace CryptoAPI.Models
@@ -12,7 +11,7 @@ namespace CryptoAPI.Models
 
         public List<decimal[]> ColecaoUtilizada { get; set; } = new List<decimal[]>();
 
-        public Cotacao(LiveOrderBookDto _orderBook, decimal quantidadeSolicitada, string tipoOperacao)
+        public Cotacao(LiveOrderBookDB _orderBook, decimal quantidadeSolicitada, string tipoOperacao)
         {
             QuantidadeSolicitada = quantidadeSolicitada;
             TipoOperacao = tipoOperacao;
@@ -20,7 +19,7 @@ namespace CryptoAPI.Models
             CalcularResultado(_orderBook);
         }
 
-        private void CalcularResultado(LiveOrderBookDto orderBook)
+        private void CalcularResultado(LiveOrderBookDB orderBook)
         {
             List<decimal[]> compras = ConverterListaArrayStringParaListaDecimal(orderBook.data.Asks);
             List<decimal[]> vendas = ConverterListaArrayStringParaListaDecimal(orderBook.data.Bids);

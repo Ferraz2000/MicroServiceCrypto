@@ -1,8 +1,8 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 
-namespace CryptoAPI.Models.Dto
+namespace CryptoAPI.Models.Mongo
 {
-    public class DataOrderBookDto
+    public class DataOrderBookDB
     {
 
         [BsonElement("timestamp")]

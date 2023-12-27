@@ -1,3 +1,4 @@
+using CryptoAPI.BackgroundServices;
 using CryptoAPI.BackgroundServices.HubSignalR;
 using CryptoAPI.Data.Configurations;
 using CryptoAPI.Data.Repositories;

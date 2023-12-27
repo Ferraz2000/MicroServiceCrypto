@@ -66,7 +66,7 @@ Welcome to your new app.
 
 @code {
     public bool isConnected = false;
-    private HubConnection? hubConnection;
+    private HubConnection hubConnection;
     public string updateOn = "";
     public List<LiveOrderBook> listOrderBook = new List<LiveOrderBook>();
     public List<decimal[]> lastPrecosUsdBtc;
@@ -75,15 +75,15 @@ Welcome to your new app.
 
     protected override async Task OnInitializedAsync()
     {
-        var hubConnection = new HubConnectionBuilder()
-        .WithUrl("https://cryptoapi:60028/cryptohub", conf =>
-        {
-            conf.HttpMessageHandlerFactory = (x) => new HttpClientHandler
-                {
-                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-                };
-        })
-        .Build();
+        hubConnection = new HubConnectionBuilder()
+       .WithUrl("https://cryptoapi:60028/cryptohub", conf =>
+       {
+           conf.HttpMessageHandlerFactory = (x) => new HttpClientHandler
+               {
+                   ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+               };
+       })
+       .Build();
         //.withurl(urlblazorazure)
 
         hubConnection.On<LiveOrderBook>

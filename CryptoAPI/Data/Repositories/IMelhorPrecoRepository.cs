@@ -1,11 +1,10 @@
-﻿
-using CryptoAPI.Models.Dto;
+﻿using CryptoAPI.Models.Mongo;
 
 namespace CryptoAPI.Data.Repositories
 {
     public interface IMelhorPrecoRepository
     {
-        public void Create(MelhorPrecoResponseDTO melhorPreco);
+        public void Create(MelhorPrecoResponseDB melhorPreco);
 
     }
 }

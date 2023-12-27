@@ -1,9 +1,9 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace CryptoAPI.Models.Dto
+namespace CryptoAPI.Models.Mongo
 {
-    public class LiveOrderBookDto
+    public class LiveOrderBookDB
 
     {
 
@@ -11,7 +11,7 @@ namespace CryptoAPI.Models.Dto
         public ObjectId Id { get; set; }
 
         [BsonElement("data")]
-        public DataOrderBookDto data { get; set; }
+        public DataOrderBookDB data { get; set; }
 
         [BsonElement("channel")]
         public string channel { get; set; }

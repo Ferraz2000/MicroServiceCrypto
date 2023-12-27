@@ -1,9 +1,9 @@
-﻿using CryptoAPI.Models.Dto;
+﻿using CryptoAPI.Models.Mongo;
 
 namespace CryptoAPI.BackgroundServices.HubSignalR
 {
     public interface ICryptoHub
     {
-        public Task BroadcastCrypto( LiveOrderBookDto orderbook);
+        public Task BroadcastCrypto(LiveOrderBookDB orderbook);
     }
 }

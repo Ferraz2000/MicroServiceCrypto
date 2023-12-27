@@ -24,7 +24,7 @@ namespace CryptoAPI.Controllers
         [HttpPost]
         public IActionResult MelhorPreco([FromBody] MelhorPrecoRequest request)
         {
-            LiveOrderBookDto mostRecentOrderBook = _cryptoRepository.GetMostRecent(request.Moeda);
+            Models.Mongo.LiveOrderBookDB mostRecentOrderBook = _cryptoRepository.GetMostRecent(request.Moeda);
 
             Cotacao cotacao = new Cotacao(mostRecentOrderBook, request.QuantidadeSolicitada, request.TipoOperacao);
 
@@ -37,7 +37,7 @@ namespace CryptoAPI.Controllers
 
         private void Create(MelhorPrecoResponse melhorPreco)
         {
-            var melhorPrecoDto = _mapper.Map<MelhorPrecoResponseDTO>(melhorPreco);
+            var melhorPrecoDto = _mapper.Map<Models.Mongo.MelhorPrecoResponseDB>(melhorPreco);
             _melhorPrecoRepository.Create(melhorPrecoDto);
         }
 
