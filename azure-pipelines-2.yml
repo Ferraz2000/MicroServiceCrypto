@@ -25,7 +25,7 @@ stages:
     - task: UseDotNet@2
       inputs:
         packageType: 'sdk'
-        version: '3.1.x'
+        version: '7.x'
         installationPath: $(Agent.ToolsDirectory)/dotnet
 
     - script: |
@@ -47,7 +47,7 @@ stages:
     - task: UseDotNet@2
       inputs:
         packageType: 'sdk'
-        version: '3.1.x'
+        version: '7.x'
         installationPath: $(Agent.ToolsDirectory)/dotnet
 
     - task: AzureCLI@2
