@@ -79,5 +79,5 @@ stages:
               imagePullSecrets: |
                 $(imagePullSecret)
               containers: |
-                $(containerRegistry)/$(imageRepository)
+                $(containerRegistry)/$(imageRepository):latest
 
