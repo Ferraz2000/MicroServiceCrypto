@@ -9,7 +9,7 @@ variables:
   azureSubscription: 'SubscriptionEstudos(1)(91ed451d-ef62-4c7d-9ae8-f9b32b441784)'
   resourceGroupName: 'Estudos'
   aksClusterName: 'microservicecrypto'
-  acrRegistryName: 'registrocontainecryptomicroservice.azurecr.io'
+  acrRegistryName: 'registrocontainecryptomicroservice'
   dockerComposeFile: 'docker-compose.yml'
 
 stages:
