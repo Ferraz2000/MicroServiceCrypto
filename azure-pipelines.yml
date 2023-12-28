@@ -45,6 +45,8 @@ stages:
         docker-compose -f $(dockerComposeFile) push
       displayName: 'Build and Push Docker Images'
     
+    - upload: manifests
+      artifact: manifests
 
 - stage: Deploy
   displayName: Deploy stage
@@ -71,6 +73,9 @@ stages:
             displayName: Deploy to Kubernetes cluster
             inputs:
               action: deploy
+              manifests: |
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
               imagePullSecrets: |
                 $(imagePullSecret)
               containers: |
