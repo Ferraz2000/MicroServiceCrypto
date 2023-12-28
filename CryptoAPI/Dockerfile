@@ -10,7 +10,7 @@ EXPOSE 60028
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["./CryptoAPI/CryptoAPI.csproj", "./CryptoAPI/"]
+COPY ["CryptoAPI/CryptoAPI.csproj", "CryptoAPI/"]
 RUN dotnet restore "./CryptoAPI/./CryptoAPI.csproj"
 COPY . .
 WORKDIR "/src/CryptoAPI"
