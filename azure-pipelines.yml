@@ -31,15 +31,20 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
-    - task: Docker@2
-      displayName: Build and push an image to container registry
+    - task: UseDotNet@2
       inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
-        tags: |
-          $(tag)
+        packageType: 'sdk'
+        version: '7.x'
+        installationPath: $(Agent.ToolsDirectory)/dotnet
+
+
+    - script: |
+        # Resto dos comandos de build aqui
+        dotnet build
+        docker-compose -f $(dockerComposeFile) build
+        docker-compose -f $(dockerComposeFile) push
+      displayName: 'Build and Push Docker Images'
+    
 
     - upload: manifests
       artifact: manifests
