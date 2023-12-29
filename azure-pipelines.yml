@@ -56,14 +56,20 @@ stages:
         runOnce:
           deploy:
             steps:
+
             - task: Kubernetes@1
               inputs:
                 connectionType: 'Azure Resource Manager'
                 azureSubscriptionEndpoint: '$(azureSubscriptionEndpoint)'
                 azureResourceGroup: 'Estudos'
                 kubernetesCluster: 'cryptoaks'
+                useClusterAdmin: true
                 command: 'apply'
                 arguments: '-f $(Pipeline.Workspace)/manifests/deploymentapi.yml -f $(Pipeline.Workspace)/manifests/deploymentweb.yml -f $(Pipeline.Workspace)/manifests/service.yml -f $(Pipeline.Workspace)/manifests/serviceweb.yml'
                 secretType: 'dockerRegistry'
                 containerRegistryType: 'Azure Container Registry'
+                configMapName: 'configMap'
+                forceUpdateConfigMap: true
+                useConfigMapFile: true
+                configMapFile: 'configMap'
             
