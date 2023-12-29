@@ -43,7 +43,7 @@ stages:
         pwd
         dotnet build
         docker-compose -f $(dockerComposeFile) build
-        docker login registrocontainecryptomicroservice.azurecr.io -u $(acrUsername) -p $(acrPassword)
+        az acr login --name registrocontainecryptomicroservice --username $(acrUsername) --password $(acrPassword)
         docker-compose -f $(dockerComposeFile) push
       displayName: 'Build and Push Docker Images'
     - task: Docker@2
