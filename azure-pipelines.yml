@@ -14,5 +14,5 @@ steps:
        inlineScript: |
          docker-compose -f $(dockerComposeFile) build
          TOKEN=$(az acr login --name cryptoservice --expose-token --output tsv --query accessToken)
-         docker login cryptoservice.azurecr.io --username 00000000-0000-0000-0000-000000000000 --password-stdin <<< $TOKEN
+         docker login cryptoservice.azurecr.io --username 00000000-0000-0000-0000-000000000000 --password $TOKEN
          docker-compose -f $(dockerComposeFile) push
