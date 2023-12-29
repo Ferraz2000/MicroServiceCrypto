@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: cryptomicroservice 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cryptomicroservice
+  template:
+    metadata:
+      labels:
+        app: cryptomicroservice 
+    spec:
+      containers:
+        - name: cryptomicroservice 
+          image: cryptoservice.azurecr.io/cryptomicroservice
+          ports:
+          - containerPort: 80
