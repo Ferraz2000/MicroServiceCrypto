@@ -42,15 +42,6 @@ stages:
         docker-compose -f $(dockerComposeFile) build
         docker-compose -f $(dockerComposeFile) push
       displayName: 'Build and Push Docker Images'
-    - task: Docker@2
-      displayName: Build and push an image to container registry
-      inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
-        tags: |
-          $(tag)
 
     - upload: manifests
       artifact: manifests
