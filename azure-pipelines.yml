@@ -5,6 +5,7 @@ pool:
   vmImage: ubuntu-latest
 variables:
   dockerComposeFile: 'docker-compose.yml'
+  dockerRegistryServiceConnection: 'c332bc41-be6e-4102-8c61-f85d0eb457c6'
 steps:
       - task: DockerCompose@0
         inputs:
