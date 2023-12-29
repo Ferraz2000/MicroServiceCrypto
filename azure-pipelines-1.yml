@@ -5,12 +5,10 @@ resources:
 - repo: self
 
 variables:
-  dockerRegistryServiceConnection: 'c332bc41-be6e-4102-8c61-f85d0eb457c6'
-  containerRegistry: 'cryptoservice.azurecr.io'
-  dockerComposeFile: 'docker-compose.yml'
+  azureSubscription: 'SubscriptionEstudos(91ed451d-ef62-4c7d-9ae8-f9b32b441784)'
+  containerRegistryId: '/subscriptions/91ed451d-ef62-4c7d-9ae8-f9b32b441784/resourceGroups/Estudos/providers/Microsoft.ContainerRegistry/registries/cryptoservice'
   vmImageName: 'ubuntu-latest'
-  azureSubscription: 'SubscriptionEstudos(5)(91ed451d-ef62-4c7d-9ae8-f9b32b441784)'
-  azureSubscriptionEndpoint: 'SubscriptionEstudos(5)(91ed451d-ef62-4c7d-9ae8-f9b32b441784)'
+  dockerComposeFile: 'docker-compose.yml'
 
 stages:
 - stage: Build
@@ -21,11 +19,12 @@ stages:
     pool:
       vmImage: $(vmImageName)
     steps:
+
     - task: DockerCompose@0
       inputs:
         containerregistrytype: 'Azure Container Registry'
         azureSubscription: '$(azureSubscription)'
-        azureContainerRegistry: '{"loginServer":"$(containerRegistry)", "id" : "/subscriptions/91ed451d-ef62-4c7d-9ae8-f9b32b441784/resourceGroups/Estudos/providers/Microsoft.ContainerRegistry/registries/cryptoservice"}'
+        azureContainerRegistry: '{"loginServer":"cryptoservice.azurecr.io", "id" : "$(containerRegistryId)"}'
         dockerComposeFile: '$(dockerComposeFile)'
         action: 'Build services'
         includeLatestTag: true
@@ -34,7 +33,7 @@ stages:
       inputs:
         containerregistrytype: 'Azure Container Registry'
         azureSubscription: '$(azureSubscription)'
-        azureContainerRegistry: '{"loginServer":"$(containerRegistry)", "id" : "/subscriptions/91ed451d-ef62-4c7d-9ae8-f9b32b441784/resourceGroups/Estudos/providers/Microsoft.ContainerRegistry/registries/cryptoservice"}'
+        azureContainerRegistry: '{"loginServer":"cryptoservice.azurecr.io", "id" : "$(containerRegistryId)"}'
         dockerComposeFile: '$(dockerComposeFile)'
         action: 'Push services'
         includeLatestTag: true
@@ -59,9 +58,9 @@ stages:
           - task: Kubernetes@1
             inputs:
               connectionType: 'Azure Resource Manager'
-              azureSubscriptionEndpoint: '$(azureSubscriptionEndpoint)'
+              azureSubscriptionEndpoint: '$(azureSubscription)'
               azureResourceGroup: 'Estudos'
-              kubernetesCluster: 'cryptoservice'
+              kubernetesCluster: 'cryptoaks'
               command: 'apply'
               arguments: '-f $(Pipeline.Workspace)/manifests/deploymentapi.yml -f $(Pipeline.Workspace)/manifests/deploymentweb.yml -f $(Pipeline.Workspace)/manifests/service.yml -f $(Pipeline.Workspace)/manifests/serviceweb.yml'
               secretType: 'dockerRegistry'
