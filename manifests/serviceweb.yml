@@ -4,6 +4,7 @@ metadata:
     name: cryptoweb-service
 spec:
     type: LoadBalancer
+    loadBalancerIP: 4.228.36.145
     ports:
     - port: 86
     selector:
