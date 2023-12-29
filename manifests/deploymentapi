@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cryptoapi-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cryptoapi
+  template:
+    metadata:
+      labels:
+        app: cryptoapi
+    spec:
+      containers:
+        - name: cryptoapi
+          image: cryptoservice.azurecr.io/cryptoapi
+          ports:
+            - containerPort: 80
