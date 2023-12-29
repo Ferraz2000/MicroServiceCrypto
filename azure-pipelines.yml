@@ -18,11 +18,10 @@ variables:
   dockerComposeFile: 'docker-compose.yml'
   tag: '$(Build.BuildId)'
   imagePullSecret: 'registrocontainecryptomicroservice69925adc-auth'
-  acrUsername: 'registrocontainecryptomicroservice'  # Substitua pelo seu nome de usuário do ACR
-  acrPassword: 'Pl2vqEj1oIWt0drqfPh/wOka2F9V8BTTHOblT/pOue+ACRBKj2uj'    # Substitua pela sua senha do ACR
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
+
 
 stages:
 - stage: Build
@@ -43,7 +42,6 @@ stages:
         pwd
         dotnet build
         docker-compose -f $(dockerComposeFile) build
-        az acr login --name registrocontainecryptomicroservice --username $(acrUsername) --password $(acrPassword)
         docker-compose -f $(dockerComposeFile) push
       displayName: 'Build and Push Docker Images'
     - task: Docker@2
@@ -91,3 +89,4 @@ stages:
                 $(imagePullSecret)
               containers: |
                 $(containerRegistry)/$(imageRepository):$(tag)
+
