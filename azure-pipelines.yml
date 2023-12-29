@@ -22,3 +22,10 @@ steps:
           dockerComposeFile: 'docker-compose.yml'
           action: 'Push services'
           includeLatestTag: true
+      - task: KubernetesManifest@1
+        inputs:
+          action: 'deploy'
+          connectionType: 'azureResourceManager'
+          azureSubscriptionConnection: 'SubscriptionEstudos(3)(91ed451d-ef62-4c7d-9ae8-f9b32b441784)'
+          azureResourceGroup: 'Estudos'
+          kubernetesCluster: 'cryptoservice'
