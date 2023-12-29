@@ -13,5 +13,5 @@ steps:
        scriptLocation: 'inlineScript'
        inlineScript: |
          docker-compose -f $(dockerComposeFile) build
-         az acr login -n cryptoservice --expose-token 
+         az acr login -n cryptoservice --expose-token -u 00000000-0000-0000-0000-000000000000 -p accessToken
          docker-compose -f $(dockerComposeFile) push
