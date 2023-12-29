@@ -15,7 +15,7 @@ variables:
   imageRepository: 'cryptomicroservice'
   containerRegistry: 'registrocontainecryptomicroservice.azurecr.io'
   dockerfilePath: '**/Dockerfile'
-  dockerComposeFile: '**/docker-compose.yml'
+  dockerComposeFile: 'docker-compose.yml'
   tag: '$(Build.BuildId)'
   imagePullSecret: 'registrocontainecryptomicroservice69925adc-auth'
 
