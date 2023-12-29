@@ -12,58 +12,57 @@ variables:
   vmImageName: 'ubuntu-latest'
   dockerComposeFile: 'docker-compose.yml'
 
-
 stages:
-- stage: Build
-  displayName: Build stage
-  jobs:
-  - job: BuildAndDeploy
-    displayName: Build and Deploy
-    pool:
-      vmImage: $(vmImageName)
-    steps:
-    - task: DockerCompose@0
-      inputs:
-        containerregistrytype: 'Azure Container Registry'
-        azureSubscription: '$(azureSubscriptionEndpoint)'
-        azureContainerRegistry: '{"loginServer":"$(containerRegistry)", "id" : "/subscriptions/91ed451d-ef62-4c7d-9ae8-f9b32b441784/resourceGroups/Estudos/providers/Microsoft.ContainerRegistry/registries/cryptoservice"}'
-        dockerComposeFile: '$(dockerComposeFile)'
-        action: 'Build services'
-        includeLatestTag: true
+  - stage: Build
+    displayName: Build stage
+    jobs:
+    - job: BuildAndDeploy
+      displayName: Build and Deploy
+      pool:
+        vmImage: $(vmImageName)
+      steps:
+      - task: DockerCompose@0
+        inputs:
+          containerregistrytype: 'Azure Container Registry'
+          azureSubscription: '$(azureSubscriptionEndpoint)'
+          azureContainerRegistry: '{"loginServer":"$(containerRegistry)", "id" : "/subscriptions/91ed451d-ef62-4c7d-9ae8-f9b32b441784/resourceGroups/Estudos/providers/Microsoft.ContainerRegistry/registries/cryptoservice"}'
+          dockerComposeFile: '$(dockerComposeFile)'
+          action: 'Build services'
+          includeLatestTag: true
 
-    - task: DockerCompose@0
-      inputs:
-        containerregistrytype: 'Azure Container Registry'
-        azureSubscription: '$(azureSubscriptionEndpoint)'
-        azureContainerRegistry: '{"loginServer":"$(containerRegistry)", "id" : "/subscriptions/91ed451d-ef62-4c7d-9ae8-f9b32b441784/resourceGroups/Estudos/providers/Microsoft.ContainerRegistry/registries/cryptoservice"}'
-        dockerComposeFile: '$(dockerComposeFile)'
-        action: 'Push services'
-        includeLatestTag: true
+      - task: DockerCompose@0
+        inputs:
+          containerregistrytype: 'Azure Container Registry'
+          azureSubscription: '$(azureSubscriptionEndpoint)'
+          azureContainerRegistry: '{"loginServer":"$(containerRegistry)", "id" : "/subscriptions/91ed451d-ef62-4c7d-9ae8-f9b32b441784/resourceGroups/Estudos/providers/Microsoft.ContainerRegistry/registries/cryptoservice"}'
+          dockerComposeFile: '$(dockerComposeFile)'
+          action: 'Push services'
+          includeLatestTag: true
 
-    - upload: manifests
-      artifact: manifests
+      - upload: manifests
+        artifact: manifests
 
-- stage: Deploy
-  displayName: Deploy stage
-  dependsOn: Build
+  - stage: Deploy
+    displayName: Deploy stage
+    dependsOn: Build
 
-  jobs:
-  - deployment: Deploy
-    displayName: Deploy
-    pool:
-      vmImage: $(vmImageName)
-    environment: 'CryptoMicroService-1810.default'
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: Kubernetes@1
-            inputs:
-              connectionType: 'Azure Resource Manager'
-              azureSubscriptionEndpoint: '$(azureSubscriptionEndpoint)'
-              azureResourceGroup: 'Estudos'
-              kubernetesCluster: 'cryptoaks'
-              command: 'apply'
-              arguments: '-f $(Pipeline.Workspace)/manifests/deploymentapi.yml -f $(Pipeline.Workspace)/manifests/deploymentweb.yml -f $(Pipeline.Workspace)/manifests/service.yml -f $(Pipeline.Workspace)/manifests/serviceweb.yml'
-              secretType: 'dockerRegistry'
-              containerRegistryType: 'Azure Container Registry'
+    jobs:
+    - deployment: Deploy
+      displayName: Deploy
+      pool:
+        vmImage: $(vmImageName)
+      environment: 'CryptoMicroService-1810.default'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: Kubernetes@1
+              inputs:
+                connectionType: 'Azure Resource Manager'
+                azureSubscriptionEndpoint: '$(azureSubscriptionEndpoint)'
+                azureResourceGroup: 'Estudos'
+                kubernetesCluster: 'cryptoaks'
+                command: 'apply'
+                arguments: '-f $(Pipeline.Workspace)/manifests/deploymentapi.yml -f $(Pipeline.Workspace)/manifests/deploymentweb.yml -f $(Pipeline.Workspace)/manifests/service.yml -f $(Pipeline.Workspace)/manifests/serviceweb.yml'
+                secretType: 'dockerRegistry'
+                containerRegistryType: 'Azure Container Registry'
