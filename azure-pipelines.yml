@@ -13,5 +13,5 @@ steps:
        scriptLocation: 'inlineScript'
        inlineScript: |
          docker-compose -f $(dockerComposeFile) build
-         docker login -u tokencli -p TMw97UyrRT483MzBfNpg+Zsv3o9rjrTyYl33EpQPZd+ACRCTuJ7W cryptoservice.azurecr.io
+         az acr login --name cryptoservice --username cryptoservice --password TMw97UyrRT483MzBfNpg+Zsv3o9rjrTyYl33EpQPZd+ACRCTuJ7W
          docker-compose -f $(dockerComposeFile) push
