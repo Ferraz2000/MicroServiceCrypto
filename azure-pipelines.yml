@@ -29,3 +29,26 @@ steps:
           azureSubscriptionConnection: 'SubscriptionEstudos(3)(91ed451d-ef62-4c7d-9ae8-f9b32b441784)'
           azureResourceGroup: 'Estudos'
           kubernetesCluster: 'cryptoservice'
+      
+
+      - task: KubernetesManifest@1
+        displayName: Create imagePullSecret
+        inputs:
+          action: createSecret
+          secretName: $(imagePullSecret)
+          dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+          azureSubscriptionConnection: 'SubscriptionEstudos(3)(91ed451d-ef62-4c7d-9ae8-f9b32b441784)'
+          azureResourceGroup: 'Estudos'
+          kubernetesCluster: 'cryptoservice'
+
+      - task: KubernetesManifest@1
+        displayName: Deploy to Kubernetes cluster
+        inputs:
+          action: deploy
+          manifests: |
+            $(Pipeline.Workspace)/manifests/deployment.yml
+            $(Pipeline.Workspace)/manifests/service.yml
+          imagePullSecrets: |
+            $(imagePullSecret)
+          containers: |
+            $(containerRegistry)/$(imageRepository):$(tag)
