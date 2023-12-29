@@ -16,4 +16,4 @@ spec:
         - name: cryptoweb
           image: cryptoservice.azurecr.io/cryptoweb
           ports:
-            - containerPort: 86
+            - containerPort: 80
