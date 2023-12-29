@@ -70,6 +70,6 @@ stages:
               azureResourceGroup: 'Estudos'
               kubernetesCluster: 'cryptoservice'
               command: 'apply'
-              arguments: '-f $(System.DefaultWorkingDirectory)/manifests/deployment.yml -f $(System.DefaultWorkingDirectory)/manifests/service.yml'
+              arguments: '-f $(Pipeline.Workspace)/manifests/deployment.yml -f $(Pipeline.Workspace)/manifests/service.yml'
               secretType: 'dockerRegistry'
               containerRegistryType: 'Azure Container Registry'
