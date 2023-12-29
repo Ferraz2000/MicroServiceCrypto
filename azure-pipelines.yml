@@ -6,12 +6,12 @@ pool:
 variables:
   dockerComposeFile: 'docker-compose.yml'
 steps:
-   - task: AzureCLI@2
-     inputs:
-       azureSubscription: 'SubscriptionEstudos(91ed451d-ef62-4c7d-9ae8-f9b32b441784)'
-       scriptType: 'bash'
-       scriptLocation: 'inlineScript'
-       inlineScript: |
-         docker-compose -f $(dockerComposeFile) build
-         az acr login --name cryptoservice
-         docker-compose -f $(dockerComposeFile) push
+      - task: DockerCompose@0
+        inputs:
+             containerregistrytype: 'Azure Container Registry'
+             azureSubscription: 'SubscriptionEstudos(1)(91ed451d-ef62-4c7d-9ae8-f9b32b441784)'
+             azureContainerRegistry: '{"loginServer":"cryptoservice.azurecr.io", "id" : "/subscriptions/91ed451d-ef62-4c7d-9ae8-f9b32b441784/resourceGroups/Estudos/providers/Microsoft.ContainerRegistry/registries/cryptoservice"}'
+             dockerComposeFile: 'docker-compose.yml'
+             action: 'Build services'
+             includeLatestTag: true
+      
