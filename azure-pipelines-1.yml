@@ -70,9 +70,6 @@ stages:
               azureSubscriptionConnection: 'SubscriptionEstudos(4)(91ed451d-ef62-4c7d-9ae8-f9b32b441784)'
               azureResourceGroup: 'Estudos'
               kubernetesCluster: 'cryptoservice'
-              manifests: |
-                  $(Pipeline.Workspace)/manifests/deployment.yml                
-                  $(Pipeline.Workspace)/manifests/service.yml
               containers: |
                 $(containerRegistry)/$(imageRepositoryapi):$(tag)
                 $(containerRegistry)/$(imageRepositoryweb):$(tag)
