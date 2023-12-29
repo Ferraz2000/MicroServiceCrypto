@@ -61,6 +61,7 @@ stages:
         deploy:
           steps:
          
+
           - task: Kubernetes@1
             inputs:
               connectionType: 'Azure Resource Manager'
@@ -68,5 +69,8 @@ stages:
               azureResourceGroup: 'Estudos'
               kubernetesCluster: 'cryptoservice'
               command: 'apply'
+              arguments: |
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
               secretType: 'dockerRegistry'
               containerRegistryType: 'Azure Container Registry'
