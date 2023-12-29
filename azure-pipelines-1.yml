@@ -7,7 +7,8 @@ resources:
 variables:
   # Container registry service connection established during pipeline creation
   dockerRegistryServiceConnection: 'c332bc41-be6e-4102-8c61-f85d0eb457c6'
-  imageRepository: 'cryptomicroservice'
+  imageRepositoryapi: 'cryptoapi'
+  imageRepositoryweb: 'cryptoweb'
   containerRegistry: 'cryptoservice.azurecr.io'
   dockerfilePath: '**/Dockerfile'
   dockerComposeFile: 'docker-compose.yml'
@@ -73,4 +74,5 @@ stages:
                   $(Pipeline.Workspace)/manifests/deployment.yml                
                   $(Pipeline.Workspace)/manifests/service.yml
               containers: |
-                $(containerRegistry)/$(imageRepository):$(tag)
+                $(containerRegistry)/$(imageRepositoryapi):$(tag)
+                $(containerRegistry)/$(imageRepositoryweb):$(tag)
