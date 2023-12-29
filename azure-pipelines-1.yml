@@ -38,6 +38,7 @@ stages:
         installationPath: $(Agent.ToolsDirectory)/dotnet
     - script: |
         # Resto dos comandos de build aqui
+        pwd
         dotnet build
         docker-compose -f $(dockerComposeFile) build
         docker-compose -f $(dockerComposeFile) push
