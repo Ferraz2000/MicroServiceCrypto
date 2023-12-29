@@ -42,8 +42,22 @@ stages:
       - upload: manifests
         artifact: manifests
 
-      - task: Kubernetes@1
-        inputs:
+  - stage: Deploy
+    displayName: Deploy stage
+    dependsOn: Build
+
+    jobs:
+    - deployment: Deploy
+      displayName: Deploy
+      pool:
+        vmImage: $(vmImageName)
+      environment: 'CryptoMicroService-1810.default'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: Kubernetes@1
+              inputs:
                 connectionType: 'Azure Resource Manager'
                 azureSubscriptionEndpoint: '$(azureSubscriptionEndpoint)'
                 azureResourceGroup: 'Estudos'
