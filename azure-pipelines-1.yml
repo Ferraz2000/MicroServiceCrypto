@@ -1,26 +1,58 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
+# Pipeline completo para build, push e deploy no AKS usando ACR
 trigger:
 - main
 
-pool:
-  vmImage: ubuntu-latest
+variables:
+  # Variáveis para o Azure Container Registry (ACR)
+  containerRegistry: 'registrocontainecryptomicroservice.azurecr.io'
+  imageRepository: 'cryptomicroservice'
+  tag: 'latest'
+  imagePullSecret: 'registrocontainecryptomicroservice87cb-auth'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-- task: DockerCompose@0
-  inputs:
-    containerregistrytype: 'Azure Container Registry'
-    azureSubscription: 'SubscriptionEstudos(91ed451d-ef62-4c7d-9ae8-f9b32b441784)'
-    azureContainerRegistry: '{"loginServer":"registrocontainecryptomicroservice.azurecr.io", "id" : "/subscriptions/91ed451d-ef62-4c7d-9ae8-f9b32b441784/resourceGroups/Estudos/providers/Microsoft.ContainerRegistry/registries/registrocontainecryptomicroservice"}'
-    dockerComposeFile: '**/docker-compose.yml'
-    action: 'Run a Docker Compose command'
-    dockerComposeCommand: 'up'
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: Build
+    displayName: Build and Push to ACR
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - script: |
+        # Construir a imagem Docker
+        docker build -t $(containerRegistry)/$(imageRepository):$(tag) .
+        # Autenticar e enviar a imagem para o ACR
+        az acr login --name registrocontainecryptomicroservice
+        docker push $(containerRegistry)/$(imageRepository):$(tag)
+      displayName: 'Build and Push Docker Image to ACR'
+
+- stage: Deploy
+  displayName: Deploy stage
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy to AKS
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: 'CryptoMicroService.microservicecrypto'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              dockerRegistryEndpoint: 'registrocontainecryptomicroservice' # Use o nome do seu ACR
+              secretType: 'dockerRegistry'
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: deploy
+              manifests: |
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
