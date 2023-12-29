@@ -51,7 +51,7 @@ stages:
       displayName: Deploy
       pool:
         vmImage: $(vmImageName)
-      environment: 'CryptoMicroService-1810.default'
+      environment: 'CryptoMicroService-1810'
       strategy:
         runOnce:
           deploy:
