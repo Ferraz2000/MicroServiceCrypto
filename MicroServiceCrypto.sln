@@ -13,11 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptoWeb", "CryptoWeb\Cryp
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{7074C39D-6156-4B7B-9011-0F7F4CD8D9AB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "manifests", "manifests", "{5DA8B00A-5A23-41A7-92BA-9685DA7994C7}"
-	ProjectSection(SolutionItems) = preProject
-		app-deploy.yaml = app-deploy.yaml
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
