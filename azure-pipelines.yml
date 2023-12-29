@@ -56,6 +56,13 @@ stages:
         runOnce:
           deploy:
             steps:
+            - task: AzureCLI@2
+              inputs:
+                azureSubscription: '$(azureSubscriptionEndpoint)'
+                scriptType: 'bash'
+                scriptLocation: 'inlineScript'
+                inlineScript: 'az aks get-credentials --resource-group Estudos --name cryptoaks'
+
 
             - task: Kubernetes@1
               inputs:
@@ -63,13 +70,8 @@ stages:
                 azureSubscriptionEndpoint: '$(azureSubscriptionEndpoint)'
                 azureResourceGroup: 'Estudos'
                 kubernetesCluster: 'cryptoaks'
-                useClusterAdmin: true
                 command: 'apply'
                 arguments: '-f $(Pipeline.Workspace)/manifests/deploymentapi.yml -f $(Pipeline.Workspace)/manifests/deploymentweb.yml -f $(Pipeline.Workspace)/manifests/service.yml -f $(Pipeline.Workspace)/manifests/serviceweb.yml'
                 secretType: 'dockerRegistry'
                 containerRegistryType: 'Azure Container Registry'
-                configMapName: 'configMap'
-                forceUpdateConfigMap: true
-                useConfigMapFile: true
-                configMapFile: 'configMap'
             
